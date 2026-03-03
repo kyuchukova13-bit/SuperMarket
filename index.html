@@ -145,14 +145,38 @@
 
 <div id="teacher-overlay">
     <div class="teacher-header">
-        <h2 style="margin: 0;">⚙️ НАСТРОЙКИ</h2>
+        <h2 style="margin: 0;">⚙️ НАСТРОЙКИ НА ИГРАТА</h2>
         <div>
             <button class="cancel-btn" onclick="closeTeacherPanel()">ОТКАЗ</button>
-            <button class="save-btn" onclick="saveTeacherPanel()">💾 ЗАПАЗИ</button>
+            <button class="save-btn" onclick="saveTeacherPanel()">💾 ЗАПАЗИ ПРОМЕНИТЕ</button>
         </div>
     </div>
     <div class="teacher-content">
-        <div class="t-column"><h3 style="margin-top:0; color:#0277bd;">🍎 ПРОДУКТИ</h3><div id="products-settings"></div></div>
+        <div class="t-column" style="flex: 0.8; background: #e3f2fd; border: 2px solid #90caf9;">
+            <h3 style="margin-top:0; color:#0277bd;">➕ ДОБАВИ СВОЙ ПРОДУКТ</h3>
+            
+            <label style="display:block; margin-top:10px; font-weight:bold;">Име на продукта:</label>
+            <input type="text" id="newName" placeholder="Напр. Шоколад" style="width: 90%; padding: 8px; margin-bottom: 10px;">
+            
+            <label style="display:block; font-weight:bold;">Цена (в Евро):</label>
+            <input type="number" id="newPrice" placeholder="Напр. 2.50" step="0.1" style="width: 90%; padding: 8px; margin-bottom: 10px;">
+            
+            <label style="display:block; font-weight:bold;">Снимка (малка, до 100kb):</label>
+            <input type="file" id="newImage" accept="image/png, image/jpeg" style="margin-bottom: 15px;">
+            
+            <button onclick="saveNewProduct()" style="background: #4CAF50; color: white; padding: 10px; border:none; border-radius:5px; font-weight:bold; cursor: pointer; width: 95%;">➕ ЗАПАЗИ ПРОДУКТА В ИГРАТА</button>
+
+            <hr style="margin: 25px 0;">
+
+            <h3 style="margin-top:0; color:#d84315;">💾 ПРЕНАСЯНЕ НА КОМПЮТЪР</h3>
+            <p style="font-size: 14px; color: #555;">Използвайте тези бутони, за да изтеглите продуктите си на флашка и да ги качите на училищния компютър.</p>
+            <button onclick="exportSettings()" style="background: #ff9800; color: white; padding: 10px; border:none; border-radius:5px; font-weight:bold; cursor: pointer; width: 95%; margin-bottom: 10px;">⬇️ ИЗТЕГЛИ НАСТРОЙКИ (ЕКСПОРТ)</button>
+            
+            <label for="importBtn" style="background: #1976d2; color: white; padding: 10px; border:none; border-radius:5px; font-weight:bold; cursor: pointer; display: block; text-align:center; width: 88%;">📂 ЗАРЕДИ НАСТРОЙКИ (ИМПОРТ)</label>
+            <input type="file" id="importBtn" accept=".json" style="display:none;" onchange="importSettings(event)">
+        </div>
+
+        <div class="t-column"><h3 style="margin-top:0; color:#0277bd;">🍎 ВСИЧКИ ПРОДУКТИ</h3><div id="products-settings"></div></div>
         <div class="t-column"><h3 style="margin-top:0; color:#0277bd;">💶 ПАРИ</h3><div id="money-settings"></div></div>
     </div>
 </div>
@@ -237,8 +261,6 @@
     function playSound(id) { document.getElementById(id).currentTime = 0; document.getElementById(id).play().catch(()=>{}); }
 
     function generateDefaultData() {
-        // ТУК ВЪВЕЖДАТЕ ВАШИТЕ ПРОДУКТИ, ЗА ДА СА ПО ПОДРАЗБИРАНЕ В GITHUB
-        // ВНИМАНИЕ: Цените са в центове (150 означава 1.50 €)
         let defCat = [
             { id: 101, name: "Банани", price: 180 },
             { id: 102, name: "Чипс", price: 100 },
@@ -266,22 +288,21 @@
             { id: 124, name: "Краставици", price: 300 }
         ];
 
-        // ТУК СА СТОЙНОСТИТЕ НА ПАРИТЕ ПО ПОДРАЗБИРАНЕ
         let defMon = [
-            { id: 14, val: 20000, type: 'note' }, // 200 €
-            { id: 13, val: 10000, type: 'note' }, // 100 €
-            { id: 11, val: 5000, type: 'note' },  // 50 €
-            { id: 10, val: 2000, type: 'note' },  // 20 €
-            { id: 9, val: 1000, type: 'note' },  // 10 €
-            { id: 8, val: 500, type: 'note' },   // 5 €
-            { id: 7, val: 200, type: 'coin' },   // 2 €
-            { id: 6, val: 100, type: 'coin' },   // 1 €
-            { id: 5, val: 50, type: 'coin' },    // 0.50 €
-            { id: 4, val: 20, type: 'coin' },   // 0.20 €
-            { id: 12, val: 10, type: 'coin' },   // 0.10 €
-            { id: 3, val: 5, type: 'coin' },    // 0.05 €
-            { id: 2, val: 2, type: 'coin' },    // 0.02 €
-            { id: 1, val: 1, type: 'coin' }     // 0.01 €
+            { id: 14, val: 20000, type: 'note' }, 
+            { id: 13, val: 10000, type: 'note' }, 
+            { id: 11, val: 5000, type: 'note' },  
+            { id: 10, val: 2000, type: 'note' },  
+            { id: 9, val: 1000, type: 'note' },  
+            { id: 8, val: 500, type: 'note' },   
+            { id: 7, val: 200, type: 'coin' },   
+            { id: 6, val: 100, type: 'coin' },   
+            { id: 5, val: 50, type: 'coin' },    
+            { id: 4, val: 20, type: 'coin' },   
+            { id: 12, val: 10, type: 'coin' },   
+            { id: 3, val: 5, type: 'coin' },    
+            { id: 2, val: 2, type: 'coin' },    
+            { id: 1, val: 1, type: 'coin' }     
         ];
         return { catalog: defCat, money: defMon };
     }
@@ -292,19 +313,27 @@
         else { const d = generateDefaultData(); myCatalog = d.catalog; myMoney = d.money; }
     }
 
-    // Учителски панел
     function openTeacherPanel() {
         loadData(); document.getElementById('teacher-overlay').style.display = 'flex';
         const pC = document.getElementById('products-settings'), mC = document.getElementById('money-settings');
         pC.innerHTML = ''; mC.innerHTML = '';
-        myCatalog.forEach(p => pC.innerHTML += `<div class="t-row"><b style="width:60px;">${p.id}.png</b><input type="text" class="name-input" id="p-name-${p.id}" value="${p.name.replace(/"/g, '&quot;')}"><input type="number" class="price-input" id="p-price-${p.id}" value="${(p.price/100).toFixed(2)}" step="0.01"></div>`);
+        
+        myCatalog.forEach(p => {
+            let labelImg = p.image ? "Собствена" : `${p.id}.png`;
+            pC.innerHTML += `<div class="t-row"><b style="width:70px; font-size:12px; overflow:hidden;">${labelImg}</b><input type="text" class="name-input" id="p-name-${p.id}" value="${p.name.replace(/"/g, '&quot;')}"><input type="number" class="price-input" id="p-price-${p.id}" value="${(p.price/100).toFixed(2)}" step="0.01"></div>`
+        });
+        
         myMoney.forEach(m => mC.innerHTML += `<div class="t-row"><b style="width:60px;">${m.id}.png</b><input type="number" class="price-input" id="m-val-${m.id}" value="${(m.val/100).toFixed(2)}" step="0.01"><select id="m-type-${m.id}" style="padding:8px;"><option value="note" ${m.type==='note'?'selected':''}>Банкнота</option><option value="coin" ${m.type==='coin'?'selected':''}>Монета</option></select></div>`);
     }
+
     function closeTeacherPanel() { document.getElementById('teacher-overlay').style.display = 'none'; }
+    
     function saveTeacherPanel() {
         myCatalog.forEach(p => { p.name = document.getElementById(`p-name-${p.id}`).value || `Продукт ${p.id}`; p.price = Math.round((parseFloat(document.getElementById(`p-price-${p.id}`).value) || 0) * 100); });
         myMoney.forEach(m => { m.val = Math.round((parseFloat(document.getElementById(`m-val-${m.id}`).value) || 0) * 100); m.type = document.getElementById(`m-type-${m.id}`).value; });
-        localStorage.setItem('SupermarketData', JSON.stringify({catalog: myCatalog, money: myMoney})); closeTeacherPanel(); alert("Запазено!");
+        localStorage.setItem('SupermarketData', JSON.stringify({catalog: myCatalog, money: myMoney})); 
+        closeTeacherPanel(); 
+        alert("Промените са запазени!");
     }
 
     function formatMoney(cents) { return (cents / 100).toFixed(2); }
@@ -344,10 +373,13 @@
         shoppingList.forEach(item => document.getElementById('shopping-list-ui').innerHTML += `<div class="list-item" id="list-${item.id}">▫️ ${item.name}</div>`);
 
         shuffled.forEach((item, index) => {
+            // Проверка: ако продуктът има собствена снимка, ползва нея, иначе търси от GitHub (ID.png)
+            let imgSrc = item.image ? item.image : item.id + '.png';
+            
             let html = `
                 <div class="product-group" onclick="pickItem(${item.id}, this)">
-                    <img src="${item.id}.png" class="shelf-item" id="img1-${item.id}">
-                    <img src="${item.id}.png" class="shelf-item" id="img2-${item.id}">
+                    <img src="${imgSrc}" class="shelf-item" id="img1-${item.id}">
+                    <img src="${imgSrc}" class="shelf-item" id="img2-${item.id}">
                     <div class="price-tag">${formatMoney(item.price)} €</div>
                 </div>
             `;
@@ -426,7 +458,7 @@
     }
 
     function startPaymentSelection() {
-        playSound('snd-cash'); // Пускаме звука ВЕДНАГА при клик
+        playSound('snd-cash'); 
         
         phase = 'choose_payment';
         document.getElementById('shop-view').style.display = 'none';
@@ -461,7 +493,7 @@
     function clearMoney() { currentInputCents = 0; document.getElementById('current-money-sum').innerText = '0.00 €'; }
 
     function startChangePhase() {
-        playSound('snd-cash'); // Пускаме звука ВЕДНАГА при клик
+        playSound('snd-cash'); 
         
         phase = 'give_change';
         const drawer = document.getElementById('cash-drawer');
@@ -491,7 +523,6 @@
             document.getElementById('money-content').style.display = 'none';
             document.getElementById('success-screen').style.display = 'block';
             
-            // Тук се появяват двата финални бутона
             document.getElementById('success-screen').innerHTML = `
                 <h1 style="color:#2e7d32; font-size:60px; margin-bottom:10px;">БРАВО! 🎉</h1>
                 <h2 style="color:#333;">Касата е засечена успешно.</h2>
@@ -506,9 +537,77 @@
             errDiv.style.display = 'block'; clearMoney();
         }
     }
+
+    // --- ФУНКЦИИ ЗА ДОБАВЯНЕ И ЕКСПОРТ НА ПРОДУКТИ ---
+    function saveNewProduct() {
+        const name = document.getElementById('newName').value;
+        const price = parseFloat(document.getElementById('newPrice').value);
+        const fileInput = document.getElementById('newImage');
+        const file = fileInput.files[0];
+
+        if (!name || isNaN(price) || !file) {
+            alert("Моля, попълнете всички полета и изберете снимка!");
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const base64Image = e.target.result;
+            const newId = Date.now(); // Генерираме уникално ID за новия продукт
+            const newProduct = { id: newId, name: name, price: Math.round(price * 100), image: base64Image };
+            
+            // Взимаме текущите продукти и добавяме новия
+            loadData(); 
+            myCatalog.push(newProduct);
+            localStorage.setItem('SupermarketData', JSON.stringify({catalog: myCatalog, money: myMoney}));
+            
+            alert("Успешно добавено! Продуктът вече е в списъка ви.");
+            
+            // Изчистване на полетата
+            document.getElementById('newName').value = '';
+            document.getElementById('newPrice').value = '';
+            document.getElementById('newImage').value = '';
+            
+            // Презареждаме панела, за да се види веднага новият продукт
+            openTeacherPanel();
+        };
+        reader.readAsDataURL(file);
+    }
+
+    function exportSettings() {
+        const savedData = localStorage.getItem('SupermarketData');
+        if (!savedData) {
+            alert("Нямате запазени настройки за изтегляне. Първо натиснете 'Запази промените'.");
+            return;
+        }
+        const blob = new Blob([savedData], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = "supermarket-nastroyki.json";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+    }
+
+    function importSettings(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                JSON.parse(e.target.result); 
+                localStorage.setItem('SupermarketData', e.target.result);
+                alert("Настройките са заредени успешно! Страницата ще се презареди.");
+                location.reload(); 
+            } catch (error) {
+                alert("Грешка: Невалиден файл!");
+            }
+        };
+        reader.readAsText(file);
+    }
 </script>
 
 </body>
-
 </html>
-
